@@ -12,6 +12,7 @@ line, = ax[0].plot(t, np.zeros(n))
 line2, = ax[1].plot(t, np.zeros(n))
 lines = [line, line2]
 ax[0].set_ylim([0, 1])
+rateText = plt.text(.8, .1, 0, bbox=dict(facecolor='white', alpha=1), transform=ax[0].transAxes)
 ax[1].set_xlim([0, 1])
 ax[1].set_ylim([-.25, 1])
 ax[2].set_xlim([0, 4])
@@ -34,11 +35,12 @@ def bifurcation():
 def animate(i):
 	m = getLogisticMap(i, n)
 	lines[0].set_ydata(m)  # update the data
+	rateText.set_text(i)
 	fourier = np.fft.fft(m)
 	xf = np.linspace(0.0, 1.0, n)
 
 	lines[1].set_data(xf, 2.0/n * np.abs(fourier[:n]))
-	return lines
+	return lines[0], lines[1], rateText
 
 
 # Init only required for blitting to give a clean slate.
@@ -48,6 +50,8 @@ def init():
     return lines
 
 bifurcation()
-ani = animation.FuncAnimation(fig, animate, np.arange(1, 5, .0125), init_func=init,
+timing = np.arange(1, 3.5, 0.0125)
+timing = np.hstack((timing, np.arange(3.5, 4.05, 0.002)))
+ani = animation.FuncAnimation(fig, animate, timing, init_func=init,
                               interval=100, blit=True)
 plt.show()
